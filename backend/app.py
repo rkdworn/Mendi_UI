@@ -1,12 +1,12 @@
-"""YOLO 신발 탐지 추론 서버 (FastAPI) + 정적 프런트(web/frontend/) 서빙.
+"""YOLO 신발 탐지 추론 서버 (FastAPI) + 정적 프런트(frontend/) 서빙.
 
-    python -m web.backend.app [--weights runs/yolo11m_base/weights/best.pt] [--host 127.0.0.1] [--port 8000]
+    python -m backend.app [--weights weights/best.pt] [--host 127.0.0.1] [--port 8000]
 
 엔드포인트
     GET  /health    서버 상태, 모델 이름, 클래스 목록
     GET  /classes   클래스 목록
     POST /predict   이미지(file) → 탐지 결과 JSON   (?conf=0.25&iou=0.7&imgsz=512)
-    GET  /          web/frontend/index.html (같은 출처로 서빙)
+    GET  /          frontend/index.html (같은 출처로 서빙)
 
 환경변수: WEIGHTS, ALLOW_ORIGINS(쉼표 구분, 기본 *), MAX_UPLOAD_MB(기본 10), SERVE_WEB(기본 1)
 프런트를 다른 곳(GitHub Pages 등)에 따로 올릴 때는 ALLOW_ORIGINS를 그 주소로 좁힐 것.
@@ -26,8 +26,8 @@ import torch
 from PIL import Image, ImageOps
 from ultralytics import YOLO
 
-ROOT = Path(__file__).resolve().parents[2]  # 프로젝트 루트 (web/backend/app.py 기준)
-DEFAULT_WEIGHTS = ROOT / "runs" / "yolo11m_base" / "weights" / "best.pt"
+ROOT = Path(__file__).resolve().parents[1]  # 레포 루트 (backend/app.py 기준)
+DEFAULT_WEIGHTS = ROOT / "weights" / "best.pt"
 WEB_DIR = Path(__file__).resolve().parents[1] / "frontend"
 
 
@@ -132,7 +132,7 @@ if os.environ.get("SERVE_WEB", "1") != "0" and WEB_DIR.exists():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--weights", help="가중치 경로 (기본: runs/yolo11m_base/weights/best.pt)")
+    ap.add_argument("--weights", help="가중치 경로 (기본: weights/best.pt)")
     ap.add_argument("--host", default="127.0.0.1", help="외부 접속 허용은 0.0.0.0")
     ap.add_argument("--port", type=int, default=8000)
     args = ap.parse_args()
