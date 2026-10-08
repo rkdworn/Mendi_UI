@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+weights/
+*.pt
+*.onnx
+.env
+.env.*
+.venv/
+.vscode/
+.DS_Store
+Thumbs.db

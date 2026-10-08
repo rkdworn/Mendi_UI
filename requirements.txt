@@ -1,0 +1,8 @@
+# torch/torchvision은 이 파일보다 먼저, 환경에 맞는 빌드로 따로 설치한다 (https://pytorch.org/get-started/locally/)
+#   RTX 50 시리즈(Blackwell)는 cu128 빌드: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+#   Colab은 기본 설치된 torch를 그대로 쓴다
+ultralytics==8.4.171
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart
+pillow
