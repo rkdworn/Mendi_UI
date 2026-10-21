@@ -33,3 +33,7 @@ GitHub Pages를 쓰는 경우 화면의 서버 연결에 Colab 주소를 입력�
 가중치·사진·토큰은 저장소에 포함하지 않습니다. 서버 시작 때 가중치 해시를 검사합니다.
 
 참고: [pyngrok Colab 연동](https://pyngrok.readthedocs.io/en/stable/integrations.html), [PyTorch BF16 지원 확인](https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_bf16_supported.html).
+
+## Colab torchao 충돌 복구
+
+`Found an incompatible version of torchao` 오류는 Colab의 기존 선택 패키지와 PEFT의 충돌입니다. 이 앙상블은 torchao 양자화를 쓰지 않으므로 설치 셀에서 제거하고 새 프로세스의 LoRA 적용을 미리 점검합니다. 이미 2번까지 실행했다면 새 셀에서 `%pip uninstall -y torchao`를 실행하고 **3번 서버 셀부터 다시 실행**하세요. ZIP 재업로드나 압축 해제는 필요하지 않습니다.

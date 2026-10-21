@@ -1,4 +1,4 @@
-# torch/torchvision? Colab? ??? CUDA ??? ????.
+# Use the torch/torchvision CUDA build provided by Colab.
 ultralytics==8.4.171
 rfdetr==1.11.2
 transformers==5.19.0
