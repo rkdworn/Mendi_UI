@@ -1,105 +1,256 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>mendii.ai</title>
-  <link rel="icon" href="data:,">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root { --orange:#fe7235;--orange-dark:#e85d20;--green:#3e976c;--bar:#ececec;--muted:#7b8794;--err:#cf222e; }
-    * { box-sizing:border-box; }
-    body { margin:0;background:#f5f7f6;color:#222;font:15px/1.6 "Noto Sans KR","Malgun Gothic",system-ui,sans-serif; }
-    button,input { font:inherit; }
-    button { cursor:pointer; }
-    [hidden] { display:none!important; }
-    :focus-visible { outline:2px solid var(--orange);outline-offset:3px; }
-    main { width:min(840px,100%);margin:32px auto;background:#fff;padding:64px 24px; }
-    h1 { margin:0 0 6px;text-align:center;font-size:clamp(30px,7vw,52px);font-weight:900;line-height:1.2;letter-spacing:-.04em;color:#111; }
-    h1 em { font-style:normal;color:var(--orange); }
-    .subtitle { text-align:center;margin:0 0 32px;font-size:17px;color:#222; }
-    .tool { max-width:640px;margin:0 auto; }
-    .connection { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;margin-bottom:16px;border:1px solid #e5e5e5;border-radius:12px;font-size:13px;color:#555; }
-    .btn { padding:9px 16px;border:0;border-radius:8px;background:var(--orange);color:#fff;font-weight:700;white-space:nowrap; }
-    .btn:hover { background:var(--orange-dark); }
-    .drop { display:grid;place-items:center;text-align:center;min-height:190px;padding:24px;border:2px dashed #ffb89a;border-radius:16px;background:#fff8f4;cursor:pointer;transition:.15s; }
-    .drop:hover,.drop.over { border-color:var(--orange);background:#fff1e8; }
-    .drop.disabled { opacity:.6; }
-    .upload-icon { display:grid;place-items:center;margin:0 auto 10px;width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff; }
-    .upload-icon svg { width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round; }
-    .drop strong { display:block;font-size:17px;color:#222; }
-    .drop small { color:var(--muted); }
-    #resultCard { margin-top:28px;padding-top:24px;border-top:1px solid #eee; }
-    #summary { font-size:22px;font-weight:700;color:#222;margin-bottom:2px; }
-    #meta { font-size:13px;color:var(--muted);margin-bottom:14px;overflow-wrap:anywhere; }
-    #stage { position:relative; }
-    #canvas { display:block;width:100%;height:auto;border-radius:12px;background:var(--bar); }
-    .spinner { position:absolute;inset:0;display:none;place-items:center;background:rgba(0,0,0,.4);color:#fff;border-radius:12px;font-weight:700;min-height:48px; }
-    .busy .spinner { display:grid; }
-    #dets { list-style:none;margin:14px 0 0;padding:0;display:grid;gap:4px; }
-    #dets li { display:grid;grid-template-columns:12px 110px 1fr 76px;gap:10px;align-items:center;padding:8px 10px;color:#333; }
-    .sw { width:12px;height:12px;border-radius:3px; }
-    .bar { height:8px;background:var(--bar);border-radius:4px;overflow:hidden; }
-    .bar>i { display:block;height:100%;border-radius:4px; }
-    .pct { text-align:right;font-weight:700;font-size:13px; }
-    .score-note { font-size:12px;color:var(--muted);margin:10px 0 0; }
-    dialog { width:min(440px,calc(100% - 32px));border:1px solid #e5e5e5;border-radius:16px;padding:24px;color:#222;box-shadow:0 16px 60px #0002; }
-    dialog::backdrop { background:#0005; }
-    .dialog-heading { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
-    .dialog-heading h2 { margin:0;font-size:20px; }
-    #closeServer { border:0;background:none;font-size:26px;line-height:1;padding:4px 8px;color:#777; }
-    label { display:block;margin-bottom:6px;font-size:14px; }
-    .server-row { display:flex;gap:8px; }
-    #api { width:100%;min-width:0;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px; }
-    #status { margin-top:12px;font-size:13px;overflow-wrap:anywhere; }
-    #status.err { color:var(--err); }
-    #status.ok { color:var(--green); }
-    #status.wait { color:var(--muted); }
-    @media(max-width:640px) {
-      main { margin:0 auto;padding:44px 20px;min-height:100svh; }
-      .subtitle { font-size:15px; }
-      .connection { padding:12px; }
-      .btn { padding:9px 12px; }
-      .drop strong { font-size:15px; }
-      #dets li { grid-template-columns:10px 92px 1fr 66px;gap:8px;padding:10px 0; }
-      .pct { font-size:12px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mendii.ai</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #fe7235; --orange-dark: #e85d20; --peach: #ffc8af; --brown: #3a1b1c; --green: #3e976c; --green-soft: #96c5ae;
+    --bg: #f6f8f7; --paper: #ffffff; --text: #3c3c3c; --muted: #6b6b6b; --line: #eeeeee; --bar: #ececec;
+    --ok: #1a7f37; --err: #cf222e;
+    --font: "Noto Sans KR", "Nanum Square", "Nanum Gothic", "Malgun Gothic", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  body { margin: 0; background: var(--bg); color: var(--muted); font: 15px/1.6 var(--font); -webkit-text-size-adjust: 100%; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; }
+  svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  :focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  /* ── 헤더 ── */
+  header { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); }
+  .hd { max-width: 1100px; margin: 0 auto; height: 64px; padding: 0 16px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+  .icon-btn { position: relative; width: 44px; height: 44px; display: grid; place-items: center; border: 0; background: none; color: #333; border-radius: 50%; }
+  .icon-btn:hover { background: #f3f3f3; }
+  .hd .right { display: flex; justify-content: flex-end; }
+  .brand { font-size: 26px; font-weight: 900; letter-spacing: -.02em; color: #1d1d1d; line-height: 1; }
+  .brand b { color: var(--orange); }
+  .dot { position: absolute; top: 9px; right: 9px; width: 9px; height: 9px; border-radius: 50%; background: #bbb; border: 2px solid #fff; }
+  .dot.ok { background: #2da44e; } .dot.err { background: var(--err); }
+
+  /* ── 메뉴 드로어 ── */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .overlay.on { opacity: 1; pointer-events: auto; }
+  .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 86vw); background: #fff; z-index: 50; transform: translateX(-100%);
+    transition: transform .25s; padding: 18px 20px; overflow-y: auto; box-shadow: 4px 0 24px rgba(0,0,0,.15); }
+  .drawer.on { transform: none; }
+  .drawer .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .drawer nav a { display: block; padding: 14px 4px; font-size: 17px; font-weight: 500; color: #222; border-bottom: 1px solid var(--line); }
+  .drawer nav a:hover { color: var(--orange); }
+  .drawer h3 { margin: 24px 0 8px; font-size: 13px; letter-spacing: .08em; color: var(--green); }
+  .drawer .row { display: flex; gap: 6px; }
+  .drawer input[type=text] { flex: 1; min-width: 0; padding: 9px 10px; border: 1px solid #d8d8d8; border-radius: 8px; font: inherit; font-size: 14px; }
+  .btn { padding: 9px 16px; border: 0; border-radius: 8px; background: var(--orange); color: #fff; font-weight: 700; }
+  .btn:hover { background: var(--orange-dark); }
+  .btn.dark { background: var(--brown); border-radius: 4px; }
+  #status { margin-top: 10px; font-size: 13px; }
+  #status.ok { color: var(--ok); } #status.err { color: var(--err); } #status.wait { color: var(--muted); }
+  .hint { font-size: 12px; color: #999; margin-top: 8px; }
+
+  /* ── 본문 컬럼 ── */
+  .wrap { max-width: 840px; margin: 0 auto; background: #fff; }
+
+  /* 배너 */
+  .banner { position: relative; min-height: 270px; padding: 0 56px; display: flex; flex-direction: column; justify-content: center; color: #fff; overflow: hidden; }
+  .banner h2 { margin: 0 0 8px; font-size: 30px; font-weight: 700; color: var(--orange); letter-spacing: -.02em; }
+  .banner p { margin: 0; font-size: 17px; font-weight: 500; line-height: 1.55; max-width: 520px; }
+  .banner::before { content: ""; position: absolute; right: -90px; top: 50%; width: 360px; height: 360px; margin-top: -180px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.07); box-shadow: 0 0 0 36px rgba(255,255,255,.025), 0 0 0 72px rgba(255,255,255,.02); }
+  .banner::after { content: ""; position: absolute; left: 56px; right: 56px; bottom: 30px; height: 2px; /* 스티치(박음질) 선 */
+    background: repeating-linear-gradient(90deg, rgba(254,114,53,.7) 0 12px, transparent 12px 22px); }
+  .b1 { background: linear-gradient(115deg, #17110c 0%, #2a1b12 60%, #4b3320 100%); }
+  .b2 { background: linear-gradient(115deg, #15161a 0%, #26282e 60%, #3b3e47 100%); }
+  .b3 { background: linear-gradient(115deg, #0f151b 0%, #1a2836 60%, #2c4258 100%); }
+
+  /* 섹션 공통 */
+  section.s { padding: 64px 24px; }
+  .sec-title { margin: 0 0 6px; font-size: clamp(30px, 7vw, 52px); font-weight: 900; line-height: 1.2; letter-spacing: -.04em; color: #111; text-align: center; }
+  .sec-title em { font-style: normal; color: var(--orange); }
+  .sec-sub { margin: 0 0 32px; text-align: center; font-size: 17px; color: #222; }
+  .sec-plain { font-size: 20px; font-weight: 700; color: #222; margin: 0 0 24px; }
+  .alt { background: #fafafa; }
+
+  /* 분석 도구 */
+  .tool { max-width: 640px; margin: 0 auto; }
+  .drop { display: grid; place-items: center; text-align: center; min-height: 190px; padding: 24px; border: 2px dashed #f3b9a0; border-radius: 16px;
+    background: #fff8f4; color: #555; cursor: pointer; transition: .15s; }
+  .drop:hover, .drop.over { border-color: var(--orange); background: #fff1e8; }
+  .drop.disabled { opacity: .55; cursor: not-allowed; }
+  .drop .big { display: block; margin: 0 auto 10px; width: 56px; height: 56px; border-radius: 50%; background: var(--orange); color: #fff; display: grid; place-items: center; }
+  .drop .big svg { width: 28px; height: 28px; }
+  .drop strong { display: block; font-size: 17px; color: #222; }
+  .drop small { color: #888; }
+
+  #resultCard { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+  #summary { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 2px; }
+  #summary em { font-style: normal; color: var(--orange); }
+  #meta { font-size: 13px; color: #888; margin-bottom: 14px; }
+  #stage { position: relative; }
+  #stage canvas { display: block; width: 100%; height: auto; border-radius: 12px; background: var(--bar); }
+  .spinner { position: absolute; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.4); color: #fff; border-radius: 12px; font-weight: 700; }
+  .busy .spinner { display: grid; }
+  ul#dets { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; }
+  ul#dets li { display: grid; grid-template-columns: 12px 72px 1fr 44px; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; cursor: pointer; color: #333; }
+  ul#dets li:hover, ul#dets li.hi { background: #fff1e8; }
+  .sw { width: 12px; height: 12px; border-radius: 3px; }
+  .bar { height: 8px; background: var(--bar); border-radius: 4px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 4px; }
+  .pct { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* 팁 말풍선 */
+  .bubbles { display: grid; gap: 14px; max-width: 640px; margin: 0 auto; }
+  .bubble { position: relative; max-width: 82%; padding: 14px 18px; border-radius: 16px; font-size: 15px; line-height: 1.5; color: #222; }
+  .bubble.peach { background: var(--peach); justify-self: start; border-bottom-left-radius: 4px; }
+  .bubble.white { background: #fff; justify-self: end; border-bottom-right-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); }
+  .bubble b { color: var(--orange-dark); }
+
+  /* 이용 방법 */
+  .steps { display: grid; gap: 18px; max-width: 640px; margin: 0 auto; }
+  .step { display: grid; grid-template-columns: 150px 1fr; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,.1); }
+  .step .ph { display: grid; place-items: center; background: #f4eee8; color: var(--orange); min-height: 120px; }
+  .step .ph svg { width: 48px; height: 48px; stroke-width: 1.5; }
+  .step .tx { padding: 20px 22px; }
+  .step h3 { margin: 0 0 6px; font-size: 16px; color: #111; }
+  .step p { margin: 0; font-size: 14px; color: #555; }
+  .step.soon { opacity: .7; }
+  .step.soon .ph { background: #eef0f2; color: #8a94a0; }
+  .tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 10px; background: #e6e9ed; color: #66707c; font-size: 11px; font-weight: 700; vertical-align: 2px; }
+
+  /* ── 푸터 ── */
+  footer { background: #fff; border-top: 1px solid var(--line); margin-top: 0; }
+  .ft { max-width: 1000px; margin: 0 auto; padding: 36px 20px 28px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; font-size: 13px; }
+  .ft h4 { margin: 0 0 10px; font-size: 13px; letter-spacing: .06em; color: var(--green); font-weight: 500; }
+  .ft p { margin: 0 0 4px; color: #555; }
+  .ft .big { font-size: 22px; font-weight: 700; color: #222; margin-bottom: 8px; }
+  .ft ul { list-style: none; margin: 0; padding: 0; color: #666; }
+  .ft li { margin-bottom: 3px; }
+  .copy { text-align: center; padding: 14px 16px 90px; font-size: 12px; color: #888; border-top: 1px solid var(--line); }
+
+  /* 플로팅 버튼 */
+  .fab { position: fixed; right: 16px; bottom: 76px; z-index: 20; display: inline-flex; gap: 6px; align-items: center; padding: 11px 18px; border-radius: 28px;
+    background: var(--orange); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(254,114,53,.45); border: 0; }
+  .fab svg { width: 20px; height: 20px; }
+  .totop { position: fixed; right: 20px; bottom: 20px; z-index: 20; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--green-soft); color: #fff; display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+
+  @media (max-width: 640px) {
+    .hd { height: 56px; } .brand { font-size: 22px; }
+    .banner { min-height: 150px; padding: 0 24px; } .banner h2 { font-size: 20px; margin-bottom: 4px; } .banner p { font-size: 13.5px; }
+    .banner::before { width: 220px; height: 220px; margin-top: -110px; right: -80px; } .banner::after { left: 24px; right: 24px; bottom: 16px; }
+    section.s { padding: 44px 16px; }
+    .step { grid-template-columns: 96px 1fr; } .step .ph svg { width: 36px; height: 36px; } .step .tx { padding: 16px; }
+    .bubble { max-width: 92%; }
+    .ft { grid-template-columns: 1fr 1fr; }
+    ul#dets li { grid-template-columns: 12px 60px 1fr 40px; }
+  }
+  .connection {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;margin-bottom:16px;background:#fff;border:1px solid #e8e8e8;border-radius:12px;font-size:13px;color:#555}
+  ul#dets li {grid-template-columns:12px 110px 1fr 76px;cursor:default}
+  .pct {font-size:13px}.score-note{font-size:12px;color:#888;margin-top:10px}
+  @media(max-width:640px){.connection{align-items:flex-start}ul#dets li{grid-template-columns:10px 92px 1fr 66px;gap:8px;padding:10px 4px}.pct{font-size:12px}}
+</style>
 </head>
 <body>
-  <main id="tool" aria-labelledby="toolTitle">
-    <h1 id="toolTitle"><em>mendii</em>.ai</h1>
-    <p class="subtitle">사진을 올려 직접 분석해 보세요</p>
+<header>
+  <div class="hd">
+    <div><button class="icon-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">
+      <svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></div>
+    <a href="#top" class="brand" aria-label="mendii.ai 홈">mendii<b>.</b>ai</a>
+    <div class="right">
+      <a href="#how" class="icon-btn" aria-label="이용 방법"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg></a>
+      <button class="icon-btn" id="settingsBtn" aria-label="서버 설정"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span class="dot" id="dot"></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="메뉴" aria-hidden="true">
+  <div class="top"><b style="color:#222">메뉴</b><button class="icon-btn" id="closeBtn" aria-label="메뉴 닫기"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <nav>
+    <a href="#top">홈</a>
+    <a href="#tool">AI 신발 분석</a>
+    <a href="#tips">촬영 팁</a>
+    <a href="#how">이용 방법</a>
+  </nav>
+  <h3 id="settings">SERVER</h3>
+  <div class="row">
+    <input id="api" type="text" placeholder="API 주소 (비우면 이 페이지를 연 서버)" spellcheck="false" autocomplete="off" aria-label="API 주소">
+    <button class="btn" id="connect" type="button">연결</button>
+  </div>
+  <div id="status" class="wait" role="status" aria-live="polite">연결 중…</div>
+  <p class="hint">분석 서버 주소를 입력하고 연결해 주세요. 같은 서버에서 이 화면을 열었다면 자동으로 연결됩니다.</p>
+</aside>
+
+<div class="wrap" id="top">
+  <div class="banner b1"><h2>사진 한 장으로 신발 손상 확인</h2><p>밑창과 뒤꿈치 안감의 손상을<br>AI가 함께 분석합니다</p></div>
+  <div class="banner b2"><h2>밑창부터 뒤꿈치 안감까지</h2><p>손상이 잘 보이는 사진을 올리고<br>부위별 결과를 확인하세요</p></div>
+  <div class="banner b3"><h2>수선이 필요한 곳을 더 쉽게</h2><p>정상 · 안감 손상 · 밑창 손상 · 두 부위 손상<br>사진 한 장마다 하나의 결과를 알려드립니다</p></div>
+
+  <section class="s" id="tool" aria-labelledby="toolTitle">
+    <h2 class="sec-title" id="toolTitle"><em>신발 손상</em>을 확인해요</h2>
+    <p class="sec-sub">사진을 올려 직접 분석해 보세요</p>
     <div class="tool">
-      <div class="connection">
-        <span id="connectionNotice" role="status" aria-live="polite">분석 서버 확인 중…</span>
-        <button class="btn" id="openServer" type="button" aria-haspopup="dialog">서버 연결</button>
-      </div>
+      <div class="connection"><span id="connectionNotice" role="status" aria-live="polite">분석 서버 확인 중…</span><button class="btn" id="openServer" type="button">서버 연결</button></div>
       <div id="drop" class="drop disabled" tabindex="0" role="button" aria-label="사진 선택 또는 끌어다 놓기">
         <div>
-          <span class="upload-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16"/></svg></span>
+          <span class="big"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16"/></svg></span>
           <strong>사진을 끌어다 놓거나 눌러서 선택</strong>
           <small>jpg · png · webp, 최대 20MB</small>
         </div>
       </div>
       <input id="file" type="file" accept="image/*" hidden>
+
       <div id="resultCard" hidden>
         <div id="summary" role="status" aria-live="polite"></div>
         <div id="meta"></div>
         <div id="stage"><canvas id="canvas"></canvas><div class="spinner">분석 중…</div></div>
-        <ul id="dets"></ul>
-        <p class="score-note" id="scoreNote" hidden>막대는 부위별 모델 점수입니다. 판정에는 부위별로 정해진 기준을 적용합니다.</p>
+        <ul id="dets"></ul><p class="score-note" id="scoreNote" hidden>막대는 부위별 모델 점수입니다. 판정에는 부위별로 정해진 기준을 적용합니다.</p>
       </div>
     </div>
-  </main>
-  <dialog id="serverDialog" aria-labelledby="serverTitle">
-    <div class="dialog-heading"><h2 id="serverTitle">분석 서버 연결</h2><button id="closeServer" type="button" aria-label="닫기">×</button></div>
-    <label for="api">서버 주소</label>
-    <div class="server-row"><input id="api" type="url" placeholder="https://…ngrok-free.dev" spellcheck="false" autocomplete="off"><button class="btn" id="connect" type="button">연결</button></div>
-    <div id="status" class="wait" role="status" aria-live="polite">실행 중인 분석 서버 주소를 입력해 주세요.</div>
-  </dialog>
-  <script src="app.js?v=compact1"></script>
+  </section>
+
+  <section class="s alt" id="tips" aria-labelledby="tipsTitle">
+    <h2 class="sec-title" id="tipsTitle">이렇게 찍으면 <em>더 정확</em>해요</h2>
+    <p class="sec-sub">분석 정확도를 높이는 촬영 팁</p>
+    <div class="bubbles">
+      <div class="bubble peach">확인할 <b>손상 부위</b>가 잘 보이도록 찍어주세요</div>
+      <div class="bubble white">밝은 곳에서 <b>초점</b>을 맞춰 찍어주세요</div>
+      <div class="bubble peach">밑창과 뒤꿈치 안감은 <b>각각 가까이</b> 촬영해 주세요</div>
+      <div class="bubble white">신발이 아닌 사진이나 흐린 사진은 <b>결과를 보장하지 않아요</b></div>
+    </div>
+  </section>
+
+  <section class="s" id="how" aria-labelledby="howTitle">
+    <h2 class="sec-title sec-plain" id="howTitle" style="text-align:left;font-size:22px;letter-spacing:0">서비스 이용 방법</h2>
+    <div class="steps">
+      <div class="step"><div class="ph"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+        <div class="tx"><h3>1. 신발 사진 촬영하기</h3><p>밑창이나 뒤꿈치 안감 등 확인하고 싶은 부위가 잘 보이도록 촬영해 주세요.</p></div></div>
+      <div class="step"><div class="ph"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16"/></svg></div>
+        <div class="tx"><h3>2. 사진 올리기</h3><p>위 <a href="#tool" style="color:var(--orange-dark);font-weight:700">AI 신발 분석</a>에서 사진을 끌어다 놓거나 선택하세요.</p></div></div>
+      <div class="step"><div class="ph"><svg class="i" viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="tx"><h3>3. 결과 확인하기</h3><p>사진 한 장의 최종 판정과 안감·밑창의 손상 여부를 확인할 수 있습니다.</p></div></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="ft">
+    <div><h4>SERVICE</h4><p class="big">AI 신발 분석</p><p>밑창 · 뒤꿈치 안감 손상 판정</p><button class="btn dark" id="ftUpload" type="button">사진 올리기</button></div>
+    <div><h4>MODEL INFO</h4><ul id="ftModel"><li>서버 연결 후 표시됩니다</li></ul></div>
+    <div><h4>CLASSES</h4><ul id="ftClasses"></ul></div>
+    <div><h4>PROJECT</h4><p>Mendi 신발 수선부위 탐지 프로젝트</p><p>DINOv3 · RF-DETR · YOLO 앙상블</p></div>
+  </div>
+  <div class="copy">© mendii.ai · 신발 손상 분석 프로젝트</div>
+</footer>
+
+<button class="fab" id="fab" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>분석하기</button>
+<button class="totop" id="totop" type="button" aria-label="맨 위로"><svg class="i" viewBox="0 0 24 24"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg></button>
+
+<script src="app.js?v=restored1"></script>
 </body>
 </html>
