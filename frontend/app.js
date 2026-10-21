@@ -4,12 +4,11 @@ const HEADERS = {'ngrok-skip-browser-warning': 'true'};
 const LABELS = {normal:'정상', heel:'뒤꿈치 안감 손상', outsole:'밑창 손상', both:'안감 · 밑창 손상'};
 let base = '', connected = false, lastFile = null, lastImg = null, lastResult = null, controller = null;
 
-function openDrawer() { $('drawer').classList.add('on'); $('overlay').classList.add('on'); $('drawer').setAttribute('aria-hidden','false'); $('menuBtn').setAttribute('aria-expanded','true'); }
-function closeDrawer() { $('drawer').classList.remove('on'); $('overlay').classList.remove('on'); $('drawer').setAttribute('aria-hidden','true'); $('menuBtn').setAttribute('aria-expanded','false'); }
+function openServerDialog() { if (!$('serverDialog').open) $('serverDialog').showModal(); $('api').focus(); }
+function closeServerDialog() { $('serverDialog').close(); }
 function setStatus(message, kind) {
   $('status').textContent = message; $('status').className = kind;
   $('connectionNotice').textContent = message;
-  $('dot').className = 'dot ' + (kind === 'wait' ? '' : kind);
   $('drop').classList.toggle('disabled', !connected);
 }
 function initialApi() {
@@ -38,11 +37,8 @@ async function connect(value) {
     if (data.status !== 'ok' || !data.thresholds || !data.artifact_sha256) throw new Error('손상 분석 서버 주소인지 확인해 주세요.');
     base = candidate; connected = true; $('api').value = base;
     setStatus('분석 서버 연결됨 · 사진을 올려 주세요.', 'ok');
-    const li = text => { const item = document.createElement('li'); item.textContent = text; return item; };
-    $('ftModel').replaceChildren(li('DINOv3 + RF-DETR + YOLO'),li('3개 모델 앙상블'));
-    $('ftClasses').replaceChildren(...Object.values(LABELS).map(li));
     try { localStorage.setItem('mendaiDamageApi', base); } catch (_) {}
-    closeDrawer();
+    closeServerDialog();
   } catch (error) {
     setStatus(error.name === 'AbortError' ? '연결 시간이 초과됐습니다. 서버 실행 상태를 확인해 주세요.' : '연결 실패 · 서버 주소와 실행 상태를 확인해 주세요.', 'err');
   } finally { clearTimeout(timer); }
@@ -56,7 +52,7 @@ function loadImage(file) {
   });
 }
 async function pick(file) {
-  if (!connected) { openDrawer(); $('api').focus(); return; }
+  if (!connected) { openServerDialog(); return; }
   if (!file || !file.type.startsWith('image/')) { setStatus('사진 파일을 선택해 주세요.', 'err'); return; }
   if (file.size > 20 * 1024 * 1024) { setStatus('20MB 이하의 사진을 선택해 주세요.', 'err'); return; }
   lastFile = file;
@@ -110,21 +106,16 @@ function draw() {
   canvas.width=Math.round(lastImg.naturalWidth*scale); canvas.height=Math.round(lastImg.naturalHeight*scale);
   canvas.getContext('2d').drawImage(lastImg,0,0,canvas.width,canvas.height);
 }
-$('menuBtn').onclick=openDrawer; $('settingsBtn').onclick=() => {openDrawer();$('api').focus();};
-$('openServer').onclick=() => {openDrawer();$('api').focus();};
-$('closeBtn').onclick=closeDrawer; $('overlay').onclick=closeDrawer;
-document.querySelectorAll('.drawer nav a').forEach(link => link.onclick=closeDrawer);
-document.addEventListener('keydown',event => {if(event.key==='Escape')closeDrawer();});
+$('openServer').onclick=openServerDialog;
+$('closeServer').onclick=closeServerDialog;
+$('serverDialog').addEventListener('click',event => {if(event.target===$('serverDialog')) {const bounds=$('serverDialog').getBoundingClientRect();if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)closeServerDialog();}});
 $('connect').onclick=() => connect($('api').value);
 $('api').addEventListener('keydown',event => {if(event.key==='Enter')connect($('api').value);});
-$('drop').onclick=() => {if(connected)$('file').click();else openDrawer();};
+$('drop').onclick=() => {if(connected)$('file').click();else openServerDialog();};
 $('drop').addEventListener('keydown',event => {if(event.key==='Enter'||event.key===' '){event.preventDefault();$('drop').click();}});
 $('file').onchange=() => {pick($('file').files[0]);$('file').value='';};
 for(const name of ['dragenter','dragover'])$('drop').addEventListener(name,event=>{event.preventDefault();$('drop').classList.add('over');});
 for(const name of ['dragleave','drop'])$('drop').addEventListener(name,event=>{event.preventDefault();$('drop').classList.remove('over');});
 $('drop').addEventListener('drop',event=>pick(event.dataTransfer.files[0]));
-const toTool=()=>$('tool').scrollIntoView({behavior:'smooth'});
-$('fab').onclick=toTool;$('ftUpload').onclick=toTool;$('totop').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-if('IntersectionObserver' in window)new IntersectionObserver(([entry])=>{$('fab').hidden=entry.isIntersecting;},{threshold:.3}).observe($('drop'));
 window.addEventListener('resize',draw);
 $('api').value=initialApi();connect($('api').value);
