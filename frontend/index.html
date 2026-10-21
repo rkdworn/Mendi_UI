@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mendi AI 신발 분석</title>
+<title>MEND AI · 신발 손상 분석</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -149,6 +149,10 @@
     .ft { grid-template-columns: 1fr 1fr; }
     ul#dets li { grid-template-columns: 12px 60px 1fr 40px; }
   }
+  .connection {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;margin-bottom:16px;background:#fff;border:1px solid #e8e8e8;border-radius:12px;font-size:13px;color:#555}
+  ul#dets li {grid-template-columns:12px 110px 1fr 76px;cursor:default}
+  .pct {font-size:13px}.score-note{font-size:12px;color:#888;margin-top:10px}
+  @media(max-width:640px){.connection{align-items:flex-start}ul#dets li{grid-template-columns:10px 92px 1fr 66px;gap:8px;padding:10px 4px}.pct{font-size:12px}}
 </style>
 </head>
 <body>
@@ -179,32 +183,33 @@
     <button class="btn" id="connect" type="button">연결</button>
   </div>
   <div id="status" class="wait" role="status" aria-live="polite">연결 중…</div>
-  <p class="hint">분석 서버(<code>python -m backend.app</code>)가 켜져 있어야 합니다. 다른 곳에서 열었다면 서버 주소를 입력하세요.</p>
+  <p class="hint">분석 서버 주소를 입력하고 연결해 주세요. 같은 서버에서 이 화면을 열었다면 자동으로 연결됩니다.</p>
 </aside>
 
 <div class="wrap" id="top">
-  <div class="banner b1"><h2>사진 한 장으로 신발 종류 확인</h2><p>스니커즈·포멀·부츠·샌들·슬리퍼·힐을<br>AI가 자동으로 분류합니다</p></div>
-  <div class="banner b2"><h2>여러 켤레도 한 번에</h2><p>한 장에 여러 짝이 있어도<br>각각 찾아 위치와 종류를 표시합니다</p></div>
-  <div class="banner b3"><h2>수선 부위까지 한눈에</h2><p>밑창 마모·찢어짐 등 수선이 필요한 부위를<br>AI가 찾아 표시합니다</p></div>
+  <div class="banner b1"><h2>사진 한 장으로 신발 손상 확인</h2><p>밑창과 뒤꿈치 안감의 손상을<br>AI가 함께 분석합니다</p></div>
+  <div class="banner b2"><h2>밑창부터 뒤꿈치 안감까지</h2><p>손상이 잘 보이는 사진을 올리고<br>부위별 결과를 확인하세요</p></div>
+  <div class="banner b3"><h2>수선이 필요한 곳을 더 쉽게</h2><p>정상 · 안감 손상 · 밑창 손상 · 두 부위 손상<br>사진 한 장마다 하나의 결과를 알려드립니다</p></div>
 
   <section class="s" id="tool" aria-labelledby="toolTitle">
-    <h2 class="sec-title" id="toolTitle"><em>신발</em>을 찾아드려요</h2>
+    <h2 class="sec-title" id="toolTitle"><em>신발 손상</em>을 확인해요</h2>
     <p class="sec-sub">사진을 올려 직접 분석해 보세요</p>
     <div class="tool">
+      <div class="connection"><span id="connectionNotice" role="status" aria-live="polite">분석 서버 확인 중…</span><button class="btn" id="openServer" type="button">서버 연결</button></div>
       <div id="drop" class="drop disabled" tabindex="0" role="button" aria-label="사진 선택 또는 끌어다 놓기">
         <div>
           <span class="big"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16"/></svg></span>
           <strong>사진을 끌어다 놓거나 눌러서 선택</strong>
-          <small>jpg · png, 최대 10MB</small>
+          <small>jpg · png · webp, 최대 20MB</small>
         </div>
       </div>
       <input id="file" type="file" accept="image/*" hidden>
 
       <div id="resultCard" hidden>
-        <div id="summary"></div>
+        <div id="summary" role="status" aria-live="polite"></div>
         <div id="meta"></div>
         <div id="stage"><canvas id="canvas"></canvas><div class="spinner">분석 중…</div></div>
-        <ul id="dets"></ul>
+        <ul id="dets"></ul><p class="score-note" id="scoreNote" hidden>막대는 부위별 모델 점수입니다. 판정에는 부위별로 정해진 기준을 적용합니다.</p>
       </div>
     </div>
   </section>
@@ -213,9 +218,9 @@
     <h2 class="sec-title" id="tipsTitle">이렇게 찍으면 <em>더 정확</em>해요</h2>
     <p class="sec-sub">분석 정확도를 높이는 촬영 팁</p>
     <div class="bubbles">
-      <div class="bubble peach">신발 <b>전체</b>가 사진 안에 들어오게 찍어주세요</div>
-      <div class="bubble white">밝은 곳에서 <b>단색 배경</b>이면 더 잘 찾아요</div>
-      <div class="bubble peach">밑창·뒷모습만 <b>크게</b> 찍으면 종류를 놓칠 수 있어요</div>
+      <div class="bubble peach">확인할 <b>손상 부위</b>가 잘 보이도록 찍어주세요</div>
+      <div class="bubble white">밝은 곳에서 <b>초점</b>을 맞춰 찍어주세요</div>
+      <div class="bubble peach">밑창과 뒤꿈치 안감은 <b>각각 가까이</b> 촬영해 주세요</div>
       <div class="bubble white">신발이 아닌 사진이나 흐린 사진은 <b>결과를 보장하지 않아요</b></div>
     </div>
   </section>
@@ -224,241 +229,28 @@
     <h2 class="sec-title sec-plain" id="howTitle" style="text-align:left;font-size:22px;letter-spacing:0">서비스 이용 방법</h2>
     <div class="steps">
       <div class="step"><div class="ph"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
-        <div class="tx"><h3>1. 신발 사진 촬영하기</h3><p>신발 전체가 보이도록 촬영해 주세요. 여러 켤레가 한 장에 있어도 괜찮아요.</p></div></div>
+        <div class="tx"><h3>1. 신발 사진 촬영하기</h3><p>밑창이나 뒤꿈치 안감 등 확인하고 싶은 부위가 잘 보이도록 촬영해 주세요.</p></div></div>
       <div class="step"><div class="ph"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16"/></svg></div>
         <div class="tx"><h3>2. 사진 올리기</h3><p>위 <a href="#tool" style="color:var(--orange-dark);font-weight:700">AI 신발 분석</a>에서 사진을 끌어다 놓거나 선택하세요.</p></div></div>
       <div class="step"><div class="ph"><svg class="i" viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><circle cx="12" cy="12" r="3"/></svg></div>
-        <div class="tx"><h3>3. 결과 확인하기</h3><p>찾은 신발마다 박스와 종류, 신뢰도가 표시됩니다.</p></div></div>
-      <div class="step soon"><div class="ph"><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></div>
-        <div class="tx"><h3>4. 수선 부위 확인하기<span class="tag">준비 중</span></h3><p>밑창 마모·찢어짐 같은 수선 부위 탐지는 다음 단계에서 제공할 예정입니다.</p></div></div>
+        <div class="tx"><h3>3. 결과 확인하기</h3><p>사진 한 장의 최종 판정과 안감·밑창의 손상 여부를 확인할 수 있습니다.</p></div></div>
     </div>
   </section>
 </div>
 
 <footer>
   <div class="ft">
-    <div><h4>SERVICE</h4><p class="big">AI 신발 분석</p><p>1단계: 신발 탐지·종류 분류 (베타)</p><button class="btn dark" id="ftUpload" type="button">사진 올리기</button></div>
+    <div><h4>SERVICE</h4><p class="big">AI 신발 분석</p><p>밑창 · 뒤꿈치 안감 손상 판정</p><button class="btn dark" id="ftUpload" type="button">사진 올리기</button></div>
     <div><h4>MODEL INFO</h4><ul id="ftModel"><li>서버 연결 후 표시됩니다</li></ul></div>
     <div><h4>CLASSES</h4><ul id="ftClasses"></ul></div>
-    <div><h4>PROJECT</h4><p>Mendi 신발 수선부위 탐지 프로젝트</p><p>YOLO11 기반 baseline 데모</p></div>
+    <div><h4>PROJECT</h4><p>Mendi 신발 수선부위 탐지 프로젝트</p><p>DINOv3 · RF-DETR · YOLO 앙상블</p></div>
   </div>
-  <div class="copy">© Mendi project · baseline demo — 결과는 참고용입니다</div>
+  <div class="copy">© MEND AI · 신발 손상 분석 프로젝트</div>
 </footer>
 
 <button class="fab" id="fab" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>분석하기</button>
 <button class="totop" id="totop" type="button" aria-label="맨 위로"><svg class="i" viewBox="0 0 24 24"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg></button>
 
-<script>
-// 같은 서버가 이 페이지를 서빙하면 '' (같은 출처). 프런트만 따로 배포하면 여기에 API 주소를 적는다.
-const DEFAULT_API = 'https://navigate-facing-underwear.ngrok-free.dev';
-// ngrok 무료 플랜의 경고 페이지(HTML) 삽입을 막는 헤더. 일반 서버에서는 무해.
-const HEADERS = { 'ngrok-skip-browser-warning': 'true' };
-const KO = { sneakers: '스니커즈', formal: '포멀', boots: '부츠', sandals: '샌들', slippers: '슬리퍼', heels: '힐', other: '기타' };
-const COLORS = ['#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#8c8c8c'];
-const $ = id => document.getElementById(id);
-const ko = n => KO[n] || n;
-
-let base = '';
-let classes = [];
-let connected = false;
-let lastFile = null, lastImg = null, lastResult = null, hiIdx = -1;
-let abortCtl = null;
-const CONF = 0.25;  // 탐지 신뢰도 기준 (화면에서 조절하지 않고 고정)
-
-const colorOf = d => COLORS[d.class_id % COLORS.length];
-
-function setStatus(text, cls) {
-  const s = $('status'); s.textContent = text; s.className = cls;
-  $('dot').className = 'dot ' + (cls === 'wait' ? '' : cls);
-}
-
-// API 주소 우선순위: ?api= 쿼리 → 브라우저 저장값 → 기본값
-function initialApi() {
-  const q = new URLSearchParams(location.search).get('api');
-  if (q) return q;
-  try { const saved = localStorage.getItem('mendiApiUrl'); if (saved !== null) return saved; } catch (e) {}
-  return DEFAULT_API;
-}
-
-async function connect(url, retry = true) {
-  base = url.trim().replace(/\/+$/, '');
-  setStatus('연결 중…', 'wait');
-  try {
-    const r = await fetch(base + '/health', { headers: HEADERS });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    classes = j.classes || [];
-    connected = true;
-    $('drop').classList.remove('disabled');
-    setStatus(`연결됨 — 모델 ${j.model} (${j.device}), 클래스 ${classes.length}개`, 'ok');
-    fillFooter(j);
-    try { localStorage.setItem('mendiApiUrl', base); } catch (e) {}
-    if (lastFile) run();
-  } catch (e) {
-    connected = false;
-    $('drop').classList.add('disabled');
-    setStatus('연결 실패 — 서버가 켜져 있는지, 주소가 맞는지 확인하세요', 'err');
-    if (retry) setTimeout(() => { if (!connected) connect(base, false); }, 3000);
-  }
-}
-
-function fillFooter(j) {
-  const li = t => { const e = document.createElement('li'); e.textContent = t; return e; };
-  $('ftModel').replaceChildren(li(`모델: ${j.model}`), li(`가중치: ${j.weights}`), li(`장치: ${j.device}`));
-  $('ftClasses').replaceChildren(...classes.map(c => li(`${ko(c)} (${c})`)));
-}
-
-function pick(file) {
-  if (!connected) { openDrawer(); return; }
-  if (!file || !file.type.startsWith('image/')) { setStatus('이미지 파일을 선택하세요', 'err'); return; }
-  lastFile = file;
-  run();
-}
-
-async function run() {
-  if (!lastFile) return;
-  if (abortCtl) abortCtl.abort();
-  abortCtl = new AbortController();
-  const ctl = abortCtl;
-  $('resultCard').hidden = false;
-  $('stage').classList.add('busy');
-
-  const q = new URLSearchParams({ conf: CONF });
-  const form = new FormData();
-  form.append('file', lastFile);  // Content-Type은 직접 넣지 않는다 (boundary 자동)
-  try {
-    const [img, res] = await Promise.all([
-      loadImage(lastFile),
-      fetch(`${base}/predict?${q}`, { method: 'POST', body: form, headers: HEADERS, signal: ctl.signal }),
-    ]);
-    if (!res.ok) {
-      let msg = 'HTTP ' + res.status;
-      try { msg = (await res.json()).detail || msg; } catch (e) {}
-      throw new Error(msg);
-    }
-    lastImg = img; lastResult = await res.json(); hiIdx = -1;
-    render();
-    if (!ctl.signal.aborted) $('resultCard').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  } catch (e) {
-    if (e.name === 'AbortError') return;
-    $('summary').textContent = '분석에 실패했습니다';
-    $('meta').textContent = e.message;
-    $('dets').innerHTML = '';
-  } finally {
-    if (ctl === abortCtl) $('stage').classList.remove('busy');
-  }
-}
-
-function loadImage(file) {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('이미지를 표시할 수 없습니다')); };
-    img.src = url;
-  });
-}
-
-function render() {
-  const r = lastResult;
-  const parts = Object.entries(r.counts).map(([n, c]) => `${ko(n)} ${c}`).join(' · ');
-  const sm = $('summary');
-  sm.textContent = '';
-  if (r.count) {
-    const em = document.createElement('em'); em.textContent = `신발 ${r.count}개`;
-    sm.append(em, ` 탐지 — ${parts}`);
-  } else {
-    sm.textContent = '탐지된 신발이 없습니다';
-  }
-  $('meta').textContent = r.count
-    ? `${r.filename} · ${r.image.width}×${r.image.height} · 추론 ${r.inference_ms}ms`
-    : '신발 전체가 잘 보이는 사진으로 다시 시도해보세요';
-  draw();
-
-  const ul = $('dets');
-  ul.innerHTML = '';
-  r.detections.forEach((d, i) => {
-    const li = document.createElement('li');
-    li.dataset.i = i;
-    li.innerHTML = `<span class="sw"></span><span class="nm"></span><span class="bar"><i></i></span><span class="pct"></span>`;
-    li.querySelector('.sw').style.background = colorOf(d);
-    li.querySelector('.nm').textContent = ko(d.label);
-    const bar = li.querySelector('.bar > i');
-    bar.style.width = (d.conf * 100).toFixed(0) + '%';
-    bar.style.background = colorOf(d);
-    li.querySelector('.pct').textContent = (d.conf * 100).toFixed(0) + '%';
-    li.addEventListener('click', () => { hiIdx = hiIdx === i ? -1 : i; markHi(); draw(); });
-    ul.appendChild(li);
-  });
-}
-
-function markHi() {
-  document.querySelectorAll('#dets li').forEach(li => li.classList.toggle('hi', +li.dataset.i === hiIdx));
-}
-
-function draw() {
-  if (!lastImg || !lastResult) return;
-  const c = $('canvas'), ctx = c.getContext('2d');
-  c.width = lastImg.naturalWidth; c.height = lastImg.naturalHeight;
-  ctx.drawImage(lastImg, 0, 0);
-  // 캔버스는 CSS로 축소 표시되므로, 화면에서 보이는 크기를 기준으로 선/글자 크기를 잡는다
-  const k = c.width / (c.clientWidth || c.width);
-  const lw = 2.5 * k, fs = 14 * k;
-  ctx.font = `700 ${fs}px "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif`;
-  ctx.textBaseline = 'middle';
-  lastResult.detections.forEach((d, i) => {
-    const b = d.box_norm, col = colorOf(d), dim = hiIdx >= 0 && hiIdx !== i;
-    const x = b.x1 * c.width, y = b.y1 * c.height, w = (b.x2 - b.x1) * c.width, h = (b.y2 - b.y1) * c.height;
-    ctx.globalAlpha = dim ? 0.3 : 1;
-    ctx.lineWidth = hiIdx === i ? lw * 1.6 : lw; ctx.strokeStyle = col;
-    ctx.strokeRect(x, y, w, h);
-    const t = `${ko(d.label)} ${(d.conf * 100).toFixed(0)}%`;
-    const tw = ctx.measureText(t).width + fs * 0.8, th = fs * 1.5;
-    const ty = y - th >= 0 ? y - th : y;
-    ctx.fillStyle = col; ctx.fillRect(x, ty, tw, th);
-    ctx.fillStyle = '#fff'; ctx.fillText(t, x + fs * 0.4, ty + th / 2);
-  });
-  ctx.globalAlpha = 1;
-}
-
-// 메뉴 드로어
-function openDrawer() { $('drawer').classList.add('on'); $('overlay').classList.add('on'); $('drawer').setAttribute('aria-hidden', 'false'); $('menuBtn').setAttribute('aria-expanded', 'true'); }
-function closeDrawer() { $('drawer').classList.remove('on'); $('overlay').classList.remove('on'); $('drawer').setAttribute('aria-hidden', 'true'); $('menuBtn').setAttribute('aria-expanded', 'false'); }
-$('menuBtn').addEventListener('click', openDrawer);
-$('settingsBtn').addEventListener('click', () => { openDrawer(); $('api').focus(); });
-$('closeBtn').addEventListener('click', closeDrawer);
-$('overlay').addEventListener('click', closeDrawer);
-document.querySelectorAll('.drawer nav a').forEach(a => a.addEventListener('click', closeDrawer));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
-
-// 업로드
-$('connect').addEventListener('click', () => connect($('api').value));
-$('api').addEventListener('keydown', e => { if (e.key === 'Enter') connect($('api').value); });
-const drop = $('drop'), fileIn = $('file');
-drop.addEventListener('click', () => { if (connected) fileIn.click(); else openDrawer(); });
-drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drop.click(); } });
-fileIn.addEventListener('change', () => { pick(fileIn.files[0]); fileIn.value = ''; });
-['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); if (connected) drop.classList.add('over'); }));
-['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e => pick(e.dataTransfer.files[0]));
-
-// 플로팅/푸터 버튼
-const toTool = () => $('tool').scrollIntoView({ behavior: 'smooth' });
-$('fab').addEventListener('click', toTool);
-$('ftUpload').addEventListener('click', toTool);
-$('totop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-// 업로드 영역이 화면에 보이면 '분석하기' 버튼은 숨긴다 (업로드 영역을 가리지 않도록)
-if ('IntersectionObserver' in window) {
-  new IntersectionObserver(([e]) => { $('fab').hidden = e.isIntersecting; }, { threshold: 0.3 }).observe($('drop'));
-}
-
-let resizeTimer;
-window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(draw, 150); });
-
-// 시작: 저장된/기본 주소로 자동 연결 (실패 시 3초 뒤 한 번 더)
-base = initialApi();
-$('api').value = base;
-connect(base);
-</script>
+<script src="app.js"></script>
 </body>
 </html>

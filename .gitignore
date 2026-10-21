@@ -1,6 +1,11 @@
 __pycache__/
 *.pyc
 weights/
+model_bundle/
+.runtime/
+*.zip
+*.pth
+*.safetensors
 *.pt
 *.onnx
 .env
